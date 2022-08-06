@@ -1,6 +1,7 @@
 # Twelve-Factor WordPress for CCBD
 
 WordPress, the [Twelve-Factor](http://12factor.net/) way: fully managed using Composer and configured using environment variables.
+> This 12 factor package is actually way better when using with ClearDB since Ignite offers only 5MB for free.
 
 ## General Concepts and Considerations
 
