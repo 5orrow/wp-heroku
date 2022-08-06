@@ -1,96 +1,54 @@
 <?php
-/**
- * The base configuration for WordPress
- *
- * The wp-config.php creation script uses this file during the installation.
- * You don't have to use the web site, you can copy this file to "wp-config.php"
- * and fill in the values.
- *
- * This file contains the following configurations:
- *
- * * Database settings
- * * Secret keys
- * * Database table prefix
- * * ABSPATH
- *
- * @link https://wordpress.org/support/article/editing-wp-config-php/
- *
- * @package WordPress
- */
 
-// ** Database settings - You can get this info from your web host ** //
-/** The name of the database for WordPress */
-define( 'DB_NAME', 'heroku_3d9940f51911db8' );
+define('WP_CONTENT_DIR', dirname(__FILE__) . '/wp-content/');
 
-/** Database username */
-define( 'DB_USER', 'b7b8c0b6407af4' );
+$db = array_merge(['port' => 3306], parse_url(getenv('CLEARDB_URL')?:getenv('CLEARDB_DATABASE_URL')));
+define('DB_NAME',     substr($db['path'], 1));
+define('DB_USER',     $db['user']);
+define('DB_PASSWORD', $db['pass']);
+define('DB_HOST',     $db['host'].':'.$db['port']);
+define('DB_CHARSET', 'utf8');
+define('DB_COLLATE', '');
+$table_prefix  = 'wp_';
 
-/** Database password */
-define( 'DB_PASSWORD', 'f33133cf' );
+define('AWS_ACCESS_KEY_ID', getenv('AWS_ACCESS_KEY_ID')?:getenv('BUCKETEER_AWS_ACCESS_KEY_ID'));
+define('AWS_SECRET_ACCESS_KEY', getenv('AWS_SECRET_ACCESS_KEY')?:getenv('BUCKETEER_AWS_SECRET_ACCESS_KEY'));
+define('AS3CF_BUCKET', getenv('S3_BUCKET')?:getenv('BUCKETEER_BUCKET_NAME'));
+if(getenv('S3_REGION')) define('AS3CF_REGION', getenv('S3_REGION'));
 
-/** Database hostname */
-define( 'DB_HOST', 'us-cdbr-east-06.cleardb.net' );
+define('SENDGRID_AUTH_METHOD', 'credentials');
+define('SENDGRID_USERNAME', getenv('SENDGRID_USERNAME'));
+define('SENDGRID_PASSWORD', getenv('SENDGRID_PASSWORD'));
+define('SENDGRID_SEND_METHOD', 'api');
 
-/** Database charset to use in creating database tables. */
-define( 'DB_CHARSET', 'utf8' );
+define('AUTH_KEY',         getenv('WORDPRESS_AUTH_KEY')        ?:'put your unique phrase here');
+define('SECURE_AUTH_KEY',  getenv('WORDPRESS_SECURE_AUTH_KEY') ?:'put your unique phrase here');
+define('LOGGED_IN_KEY',    getenv('WORDPRESS_LOGGED_IN_KEY')   ?:'put your unique phrase here');
+define('NONCE_KEY',        getenv('WORDPRESS_NONCE_KEY')       ?:'put your unique phrase here');
+define('AUTH_SALT',        getenv('WORDPRESS_AUTH_SALT')       ?:'put your unique phrase here');
+define('SECURE_AUTH_SALT', getenv('WORDPRESS_SECURE_AUTH_SALT')?:'put your unique phrase here');
+define('LOGGED_IN_SALT',   getenv('WORDPRESS_LOGGED_IN_SALT')  ?:'put your unique phrase here');
+define('NONCE_SALT',       getenv('WORDPRESS_NONCE_SALT')      ?:'put your unique phrase here');
 
-/** The database collate type. Don't change this if in doubt. */
-define( 'DB_COLLATE', '' );
+define('FORCE_SSL_ADMIN', true);
+define('FORCE_SSL_LOGIN', true);
+if(isset($_SERVER['HTTP_X_FORWARDED_PROTO']) && $_SERVER['HTTP_X_FORWARDED_PROTO'] == 'https') $_SERVER['HTTPS'] = 'on';
 
-/**#@+
- * Authentication unique keys and salts.
- *
- * Change these to different unique phrases! You can generate these using
- * the {@link https://api.wordpress.org/secret-key/1.1/salt/ WordPress.org secret-key service}.
- *
- * You can change these at any point in time to invalidate all existing cookies.
- * This will force all users to have to log in again.
- *
- * @since 2.6.0
- */
-define( 'AUTH_KEY',         'igvWh%D-ngaqD*-Yf&q1Oep.ei47fwRcj/VIlI)2suv=@_!kqN{F@^|n5C$Ooa~>' );
-define( 'SECURE_AUTH_KEY',  '#9|8Ky|QAKcU6CMxuiWDe@?p+QZ(zpYGPl4HN3p-nh+,UrBZ+Ty0`[--q)^:@@]!' );
-define( 'LOGGED_IN_KEY',    '[6vW2D:0#qCv=s`gCsZ3s:D>!@7~10!~^THy(Me4n<qd%E7waJ,=7#[ ?$,63xUy' );
-define( 'NONCE_KEY',        'mror:=-Sz1Pvi2{7JQdu8+aET@b(9C_=_l9lq=4lZ^vLm+<T2;-7bBOX]!58W}y(' );
-define( 'AUTH_SALT',        'eJO#/h1s;EFQ7`15Aij~5x&piJJ[;<3r:]`(,^B8qz/n^VDL+<,l`;.xg0#6]S~V' );
-define( 'SECURE_AUTH_SALT', '^tTE~HskyJN :MS^e7ZVYCRtdZX5W0bs/zJ.tmBj5@e/nPrQ:[QIt];16xm.z5*;' );
-define( 'LOGGED_IN_SALT',   '/^TLEDXZ0%iP*G@LsQb)FKEG%aAtmft;<e&dcR]F#WCMOKvBc(mn5w6oZ[;;Yw4F' );
-define( 'NONCE_SALT',       '>9fTx>IcS_{_.OsK+pjw6r}I[g+$x}~Y/XYWRe1Cdv[>+%mZ;_ qT&hY:<ijk0Bq' );
+define('WP_DEBUG', true);
+define('WP_DEBUG_DISPLAY', false);
+define('WP_DEBUG_LOG', false); // this is correct - we don't want errors to go to debug.log, but to the default destination
 
-/**#@-*/
+define('DISALLOW_FILE_MODS', true);
 
-/**
- * WordPress database table prefix.
- *
- * You can have multiple installations in one database if you give each
- * a unique prefix. Only numbers, letters, and underscores please!
- */
-$table_prefix = 'wp_';
+define('DISABLE_WP_CRON', in_array(getenv('DISABLE_WP_CRON'), ['true', '1', 'yes'], true) ? true : false);
 
-/**
- * For developers: WordPress debugging mode.
- *
- * Change this to true to enable the display of notices during development.
- * It is strongly recommended that plugin and theme developers use WP_DEBUG
- * in their development environments.
- *
- * For information on other constants that can be used for debugging,
- * visit the documentation.
- *
- * @link https://wordpress.org/support/article/debugging-in-wordpress/
- */
-define( 'WP_DEBUG', false );
+if(!defined('ABSPATH')) define('ABSPATH', dirname(__FILE__) . '/wordpress/'); // should not be necessary
 
-/* Add any custom values between this line and the "stop editing" line. */
+require_once(ABSPATH . 'wp-settings.php');
 
-
-
-/* That's all, stop editing! Happy publishing. */
-
-/** Absolute path to the WordPress directory. */
-if ( ! defined( 'ABSPATH' ) ) {
-	define( 'ABSPATH', __DIR__ . '/' );
+// installs using a Heroku button do not know the URL, so they use example.com as the site URL, which we need to fix
+if(function_exists('get_option') && get_option('siteurl') == 'http://example.herokuapp.com') {
+	update_option('siteurl', set_url_scheme($url = 'http://'.$_SERVER['HTTP_HOST']));
+	header("Location: $url".$_SERVER['REQUEST_URI']);
+	exit;
 }
-
-/** Sets up WordPress vars and included files. */
-require_once ABSPATH . 'wp-settings.php';
